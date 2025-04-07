@@ -9,25 +9,39 @@ def generate_password(length=12, use_uppercase=True, use_numbers=True, use_symbo
         characters += string.digits
     if use_symbols:
         characters += string.punctuation
-    
+
+    if not characters:
+        raise ValueError("No character types selected.")
+
     return ''.join(random.choice(characters) for _ in range(length))
 
+def get_boolean_input(prompt):
+    while True:
+        choice = input(prompt + " (y/n): ").lower()
+        if choice in ['y', 'n']:
+            return choice == 'y'
+        print("Please enter 'y' or 'n'.")
+
 def main():
-    print("Welcome to SecurePass Generator!")
-    try:
-        length = int(input("Enter the desired password length (min 4): "))
-        if length < 4:
-            print("Password length must be at least 4.")
-            return
-        
-        use_uppercase = input("Include uppercase letters? (y/n): ").lower() == 'y'
-        use_numbers = input("Include numbers? (y/n): ").lower() == 'y'
-        use_symbols = input("Include symbols? (y/n): ").lower() == 'y'
+    print("\n🔐 Welcome to SecurePass Generator!\n")
 
-        password = generate_password(length, use_uppercase, use_numbers, use_symbols)
-        print(f"Your generated password is: {password}")
-    except ValueError:
-        print("Invalid input. Please enter a valid number.")
+    while True:
+        try:
+            length = int(input("Enter password length (min 4): "))
+            if length < 4:
+                print("⚠️ Password length must be at least 4.\n")
+                continue
 
-if __name__ == "__main__":
-    main()
+            use_uppercase = get_boolean_input("Include uppercase letters?")
+            use_numbers = get_boolean_input("Include numbers?")
+            use_symbols = get_boolean_input("Include symbols?")
+
+            password = generate_password(length, use_uppercase, use_numbers, use_symbols)
+            print(f"\n✅ Your secure password is:\n👉 {password}\n")
+
+            again = get_boolean_input("Generate another password?")
+            if not again:
+                print("\nThank you for using SecurePass Generator! 🔒")
+                break
+        except ValueError as ve:
+            print(f"Error: {ve}\n")
